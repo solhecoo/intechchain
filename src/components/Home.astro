@@ -1,0 +1,49 @@
+---
+import { useTranslations, getDict, type Lang } from '../i18n/ui';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from './Header.astro';
+import Hero from './Hero.astro';
+import Services from './Services.astro';
+import AiSection from './AiSection.astro';
+import About from './About.astro';
+import Projects from './Projects.astro';
+import Clients from './Clients.astro';
+import Closing from './Closing.astro';
+import Footer from './Footer.astro';
+import WhatsappButton from './WhatsappButton.astro';
+import Motion from './Motion.astro';
+import Marquee from './Marquee.astro';
+import Cursor from './Cursor.astro';
+import RobotShowcase from './RobotShowcase.astro';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const dict = getDict(lang);
+---
+
+<BaseLayout
+  lang={lang}
+  title={t('meta.title')}
+  description={t('meta.description')}
+  ogAlt={dict.meta.ogAlt}
+>
+  <Header lang={lang} />
+  <main id="main">
+    <Hero lang={lang} />
+    <Marquee lang={lang} />
+    <Services lang={lang} />
+    <AiSection lang={lang} />
+    <About lang={lang} />
+    <Projects lang={lang} />
+    <Clients lang={lang} />
+    <Closing lang={lang} />
+    <RobotShowcase lang={lang} />
+  </main>
+  <Footer lang={lang} />
+  <WhatsappButton lang={lang} />
+  <Cursor />
+  <Motion />
+</BaseLayout>

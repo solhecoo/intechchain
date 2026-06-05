@@ -1,0 +1,135 @@
+---
+/**
+ * Motor de movimiento del sitio (estilo agencia premium):
+ *  - Scroll suave con inercia (Lenis) + navegación por anclas suave.
+ *  - Parallax por scroll [data-parallax].
+ *  - Reveal on scroll [data-reveal] (+ data-reveal-delay).
+ *  - Títulos cinéticos [data-kinetic] (reveal por palabra).
+ *  - Botones magnéticos [data-magnetic].
+ * Respeta prefers-reduced-motion.
+ */
+---
+
+<script>
+  import Lenis from 'lenis';
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- Scroll suave (Lenis) ----
+  let lenis: Lenis | null = null;
+  if (!reduceMotion) {
+    lenis = new Lenis({ lerp: 0.1, wheelMultiplier: 1, smoothWheel: true });
+    const raf = (time: number) => {
+      lenis!.raf(time);
+      requestAnimationFrame(raf);
+    };
+    requestAnimationFrame(raf);
+  }
+
+  // Navegación por anclas suave (compatibles con Lenis)
+  document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((a) => {
+    a.addEventListener('click', (e) => {
+      const id = a.getAttribute('href');
+      if (!id || id === '#') return;
+      const target = document.querySelector(id);
+      if (!target) return;
+      e.preventDefault();
+      if (lenis) lenis.scrollTo(target as HTMLElement, { offset: -90 });
+      else target.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+
+  // ---- Reveal on scroll ----
+  const revealEls = document.querySelectorAll<HTMLElement>('[data-reveal]');
+  if (reduceMotion) {
+    revealEls.forEach((el) => el.classList.add('is-visible'));
+  } else {
+    const io = new IntersectionObserver(
+      (entries, obs) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const el = entry.target as HTMLElement;
+          const delay = el.dataset.revealDelay;
+          if (delay) el.style.transitionDelay = `${delay}ms`;
+          el.classList.add('is-visible');
+          obs.unobserve(el);
+        });
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -8% 0px' },
+    );
+    revealEls.forEach((el) => io.observe(el));
+  }
+
+  // ---- Títulos cinéticos (split por palabra + reveal) ----
+  if (!reduceMotion) {
+    const kinetics = document.querySelectorAll<HTMLElement>('[data-kinetic]');
+    const kio = new IntersectionObserver(
+      (entries, obs) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('is-in');
+          obs.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.2 },
+    );
+    kinetics.forEach((el) => {
+      const words = (el.textContent || '').trim().split(/\s+/);
+      el.textContent = '';
+      el.classList.add('kinetic');
+      words.forEach((w, i) => {
+        const wrap = document.createElement('span');
+        wrap.className = 'kinetic-word';
+        const inner = document.createElement('span');
+        inner.className = 'kinetic-inner';
+        inner.textContent = w;
+        inner.style.transitionDelay = `${i * 55}ms`;
+        wrap.appendChild(inner);
+        el.appendChild(wrap);
+        if (i < words.length - 1) el.appendChild(document.createTextNode(' '));
+      });
+      kio.observe(el);
+    });
+  }
+
+  // ---- Parallax por scroll ----
+  const parallaxEls = Array.from(
+    document.querySelectorAll<HTMLElement>('[data-parallax]'),
+  ).map((el) => ({ el, factor: parseFloat(el.dataset.parallax || '0') }));
+
+  if (!reduceMotion && parallaxEls.length) {
+    let ticking = false;
+    const update = (y: number) => {
+      for (const { el, factor } of parallaxEls) {
+        el.style.transform = `translate3d(0, ${y * factor}px, 0)`;
+      }
+      ticking = false;
+    };
+    const onScroll = (y: number) => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(() => update(y));
+      }
+    };
+    if (lenis) lenis.on('scroll', ({ scroll }: { scroll: number }) => onScroll(scroll));
+    else
+      window.addEventListener('scroll', () => onScroll(window.scrollY), { passive: true });
+    update(window.scrollY);
+  }
+
+  // ---- Botones magnéticos ----
+  if (!reduceMotion && window.matchMedia('(pointer: fine)').matches) {
+    document.querySelectorAll<HTMLElement>('[data-magnetic]').forEach((el) => {
+      const strength = 0.35;
+      el.addEventListener('pointermove', (e) => {
+        const r = el.getBoundingClientRect();
+        const x = e.clientX - r.left - r.width / 2;
+        const y = e.clientY - r.top - r.height / 2;
+        el.style.transform = `translate(${(x * strength).toFixed(1)}px, ${(y * strength).toFixed(1)}px)`;
+      });
+      el.addEventListener('pointerleave', () => {
+        el.style.transform = '';
+      });
+    });
+  }
+</script>

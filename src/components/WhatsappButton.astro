@@ -1,0 +1,23 @@
+---
+import { whatsappUrl, getDict, type Lang } from '../i18n/ui';
+import Icon from './Icon.astro';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const dict = getDict(lang);
+const waContact = whatsappUrl(dict.contact.whatsappMessage);
+const label = dict.contact.whatsappLabel;
+---
+
+<a
+  href={waContact}
+  target="_blank"
+  rel="noopener"
+  aria-label={label}
+  class="fixed bottom-5 right-5 z-50 grid h-14 w-14 place-items-center rounded-full bg-[#25D366] text-[#04231a] shadow-xl shadow-black/40 transition-transform hover:scale-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+>
+  <Icon name="whatsapp" class="h-7 w-7" />
+  <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#25D366] opacity-30"></span>
+</a>

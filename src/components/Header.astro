@@ -1,0 +1,132 @@
+---
+import { useTranslations, whatsappUrl, getDict, type Lang } from '../i18n/ui';
+import LangSwitcher from './LangSwitcher.astro';
+import Logo from './Logo.astro';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const dict = getDict(lang);
+const waContact = whatsappUrl(dict.contact.whatsappMessage);
+
+const navItems = [
+  { href: '#services', label: t('nav.services') },
+  { href: '#about', label: t('nav.about') },
+  { href: '#projects', label: t('nav.projects') },
+  { href: '#clients', label: t('nav.clients') },
+  { href: '#contact', label: t('nav.contact') },
+];
+const home = lang === 'es' ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}en/`;
+---
+
+<header
+  id="site-header"
+  class="fixed inset-x-0 top-0 z-40 transition-all duration-300"
+  data-header
+>
+  <div class="container-x">
+    <div
+      class="mt-3 flex items-center justify-between rounded-full border border-line/60 bg-ink-900/70 px-4 py-2.5 backdrop-blur-md sm:px-5"
+      data-header-bar
+    >
+      <a href={home} class="flex items-center text-white" aria-label="Intechchain — inicio">
+        <Logo class="h-6 w-auto sm:h-7" />
+      </a>
+
+      <nav aria-label={t('nav.services')} class="hidden items-center gap-1 lg:flex">
+        {
+          navItems.map((item) => (
+            <a
+              href={item.href}
+              class="rounded-full px-3.5 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-white/5 hover:text-white"
+            >
+              {item.label}
+            </a>
+          ))
+        }
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <LangSwitcher lang={lang} />
+        <a
+          href={waContact}
+          target="_blank"
+          rel="noopener"
+          class="btn-primary hidden sm:inline-flex"
+          data-magnetic
+        >
+          {t('nav.cta')}
+        </a>
+        <button
+          type="button"
+          class="grid h-10 w-10 place-items-center rounded-full border border-line text-white lg:hidden"
+          aria-label="Menu"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+          data-menu-toggle
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" data-menu-icon-open><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" class="hidden" data-menu-icon-close><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Menú móvil -->
+    <nav
+      id="mobile-menu"
+      class="mt-2 hidden overflow-hidden rounded-2xl border border-line/60 bg-ink-900/95 p-3 backdrop-blur-md lg:hidden"
+      data-mobile-menu
+      aria-label="Mobile"
+    >
+      {
+        navItems.map((item) => (
+          <a
+            href={item.href}
+            class="block rounded-xl px-4 py-3 text-base font-medium text-slate-200 hover:bg-white/5"
+            data-mobile-link
+          >
+            {item.label}
+          </a>
+        ))
+      }
+      <a href={waContact} target="_blank" rel="noopener" class="btn-primary mt-2 w-full">
+        {t('nav.cta')}
+      </a>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const header = document.querySelector('[data-header-bar]');
+  const onScroll = () => {
+    if (!header) return;
+    if (window.scrollY > 12) {
+      header.classList.add('shadow-xl', 'shadow-black/30', 'border-line');
+    } else {
+      header.classList.remove('shadow-xl', 'shadow-black/30', 'border-line');
+    }
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  const toggle = document.querySelector('[data-menu-toggle]');
+  const menu = document.querySelector('[data-mobile-menu]');
+  const iconOpen = document.querySelector('[data-menu-icon-open]');
+  const iconClose = document.querySelector('[data-menu-icon-close]');
+  const setOpen = (open: boolean) => {
+    if (!menu || !toggle) return;
+    menu.classList.toggle('hidden', !open);
+    toggle.setAttribute('aria-expanded', String(open));
+    iconOpen?.classList.toggle('hidden', open);
+    iconClose?.classList.toggle('hidden', !open);
+  };
+  toggle?.addEventListener('click', () => {
+    const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+    setOpen(!isOpen);
+  });
+  document
+    .querySelectorAll('[data-mobile-link]')
+    .forEach((link) => link.addEventListener('click', () => setOpen(false)));
+</script>

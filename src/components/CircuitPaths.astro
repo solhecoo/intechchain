@@ -1,0 +1,48 @@
+---
+/**
+ * Decoración blockchain: caminos/circuitos con datos fluyendo (stroke-dashoffset)
+ * y bloques que pulsan como "validación". Parallax en scroll. Decorativo.
+ */
+interface Props {
+  class?: string;
+  parallax?: number;
+  flip?: boolean;
+}
+const { class: className = '', parallax = 0.12, flip = false } = Astro.props;
+---
+
+<div
+  class:list={['pointer-events-none absolute -z-10 text-brand-500/40', className]}
+  aria-hidden="true"
+  data-parallax={parallax}
+>
+  <svg
+    viewBox="0 0 320 320"
+    class:list={['h-full w-full', flip ? '-scale-x-100' : '']}
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.4"
+  >
+    <!-- Caminos base -->
+    <g opacity="0.5">
+      <path d="M10 48 H120 V128 H250 V70 H315" />
+      <path d="M5 170 H70 V90 H180 V210 H300" />
+      <path d="M40 315 V235 H150 V160 H260 V255 H320" />
+    </g>
+    <!-- Datos fluyendo por los caminos -->
+    <g class="text-cyan-accent" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <path class="flow" d="M10 48 H120 V128 H250 V70 H315" />
+      <path class="flow flow-2" d="M5 170 H70 V90 H180 V210 H300" />
+      <path class="flow flow-3" d="M40 315 V235 H150 V160 H260 V255 H320" />
+    </g>
+    <!-- Bloques (nodos) -->
+    <g stroke="none">
+      <rect x="113" y="121" width="14" height="14" rx="3" fill="#5689ff" class="block-pulse" />
+      <rect x="243" y="63" width="14" height="14" rx="3" fill="#34d2ff" class="block-pulse" style="animation-delay:.6s" />
+      <rect x="63" y="83" width="14" height="14" rx="3" fill="#5689ff" class="block-pulse" style="animation-delay:1.1s" />
+      <rect x="173" y="203" width="14" height="14" rx="3" fill="#34d2ff" class="block-pulse" style="animation-delay:.3s" />
+      <rect x="143" y="153" width="14" height="14" rx="3" fill="#5689ff" class="block-pulse" style="animation-delay:1.4s" />
+      <rect x="253" y="248" width="14" height="14" rx="3" fill="#34d2ff" class="block-pulse" style="animation-delay:.9s" />
+    </g>
+  </svg>
+</div>

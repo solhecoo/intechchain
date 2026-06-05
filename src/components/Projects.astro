@@ -1,0 +1,255 @@
+---
+import { useTranslations, whatsappUrl, getDict, type Lang } from '../i18n/ui';
+import { projects } from '../content/projects';
+import Icon from './Icon.astro';
+import CircuitPaths from './CircuitPaths.astro';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const dict = getDict(lang);
+const waContact = whatsappUrl(dict.contact.whatsappMessage);
+const prevLabel = lang === 'es' ? 'Anterior' : 'Previous';
+const nextLabel = lang === 'es' ? 'Siguiente' : 'Next';
+---
+
+<section id="projects" class="relative scroll-mt-24 overflow-hidden border-t border-line/40 py-20 sm:py-28">
+  {/* Atmósfera de color: blobs difuminados que dan profundidad a la sección */}
+  <div class="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
+    <div class="drift-slow absolute -left-24 top-12 h-[30rem] w-[30rem] rounded-full bg-brand-600/15 blur-[130px]"></div>
+    <div class="drift-slower absolute -right-24 bottom-0 h-[28rem] w-[28rem] rounded-full bg-[#d6308b]/12 blur-[130px]"></div>
+    <div class="drift-slow absolute left-1/2 top-1/3 h-[22rem] w-[22rem] -translate-x-1/2 rounded-full bg-cyan-accent/8 blur-[140px]"></div>
+  </div>
+  <CircuitPaths class="-left-20 bottom-0 h-[24rem] w-[24rem] opacity-50" parallax={0.06} flip />
+  <div class="container-x">
+    <div class="flex flex-col items-center gap-6 text-center sm:flex-row sm:items-end sm:justify-between sm:text-left" data-reveal>
+      <div class="mx-auto max-w-2xl sm:mx-0">
+        <p class="eyebrow mb-3">{t('projects.eyebrow')}</p>
+        <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl" data-kinetic>
+          {t('projects.title')}
+        </h2>
+        <p class="mt-5 text-pretty text-slate-300">{t('projects.body')}</p>
+      </div>
+
+      {
+        projects.length > 0 && (
+          <div class="flex shrink-0 gap-3" data-slider-controls>
+            <button
+              type="button"
+              class="grid h-11 w-11 place-items-center rounded-full border border-line bg-white/5 text-white transition-colors hover:border-brand-400 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-400"
+              data-slider-prev
+              aria-label={prevLabel}
+            >
+              <Icon name="arrow" class="h-5 w-5 rotate-180" />
+            </button>
+            <button
+              type="button"
+              class="grid h-11 w-11 place-items-center rounded-full border border-line bg-white/5 text-white transition-colors hover:border-brand-400 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-400"
+              data-slider-next
+              aria-label={nextLabel}
+            >
+              <Icon name="arrow" class="h-5 w-5" />
+            </button>
+          </div>
+        )
+      }
+    </div>
+
+    {
+      projects.length > 0 ? (
+        <div
+          class="no-scrollbar mt-12 flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-2"
+          data-slider-track
+          tabindex="0"
+          role="region"
+          aria-roledescription="carousel"
+          aria-label={t('projects.title')}
+        >
+          {projects.map((p, i) => (
+            <article
+              class="group relative w-[80%] shrink-0 snap-start [perspective:1200px] sm:w-[46%] lg:w-[31.5%]"
+              style={`--accent:${p.accent}`}
+              data-card
+              aria-label={`${i + 1} / ${projects.length}: ${p.title[lang]}`}
+            >
+              <div
+                class="relative h-full overflow-hidden rounded-[var(--radius-card)] border border-white/[0.06] bg-[#0b1326] transition-[transform,box-shadow,border-color] duration-150 ease-out will-change-transform group-hover:border-[var(--accent)] group-hover:shadow-[0_30px_70px_-20px_var(--accent)]"
+                data-card-inner
+              >
+                {/* Spotlight que sigue el cursor */}
+                <div
+                  class="pointer-events-none absolute inset-0 z-20 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                  aria-hidden="true"
+                  style="background:radial-gradient(240px circle at var(--mx,50%) var(--my,50%), color-mix(in srgb, var(--accent) 34%, transparent), transparent 62%)"
+                />
+
+                <div
+                  class="relative flex aspect-[4/5] items-center justify-center overflow-hidden"
+                  style={`background:radial-gradient(130% 80% at 50% -8%, ${p.accent}40 0%, transparent 55%), radial-gradient(90% 60% at 50% 118%, ${p.accent}1f, transparent 60%), #0b1326`}
+                >
+                  {/* Resplandor del color de marca tras el dispositivo */}
+                  <div
+                    class="pointer-events-none absolute left-1/2 top-1/2 h-[72%] w-[72%] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-60 blur-3xl transition-opacity duration-500 group-hover:opacity-100"
+                    style={`background:radial-gradient(circle, ${p.accent}, transparent 66%)`}
+                    aria-hidden="true"
+                  />
+
+                  {/* Dispositivo flotante */}
+                  <div class="float-soft relative z-10 flex h-full w-full items-center justify-center">
+                    <img
+                      src={p.image}
+                      alt={`${p.title[lang]} — mockup`}
+                      loading="lazy"
+                      decoding="async"
+                      class="h-[110%] w-auto object-contain drop-shadow-[0_28px_45px_rgba(0,0,0,0.55)] transition-transform duration-300 will-change-transform"
+                      data-card-img
+                    />
+                  </div>
+
+                  {/* Viñeta + desvanecido inferior: integra el mockup en el tema oscuro */}
+                  <div
+                    class="pointer-events-none absolute inset-0 z-[15]"
+                    aria-hidden="true"
+                    style="background:linear-gradient(to bottom, rgba(11,19,38,0) 42%, #0b1326 100%);box-shadow:inset 0 0 70px 16px rgba(5,10,24,0.5)"
+                  />
+
+                  {/* Indicador de interacción */}
+                  <span
+                    class="absolute right-4 top-4 z-30 grid h-9 w-9 translate-y-1 place-items-center rounded-full text-white opacity-0 backdrop-blur transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100"
+                    style={`background:${p.accent}cc`}
+                    aria-hidden="true"
+                  >
+                    <Icon name="arrow" class="h-4 w-4 -rotate-45" />
+                  </span>
+                </div>
+
+                <div class="relative p-6">
+                  <span class="mb-3 block h-1 w-10 rounded-full transition-all duration-300 group-hover:w-16" style={`background:${p.accent}`} />
+                  <h3 class="text-lg font-semibold capitalize text-white">{p.title[lang]}</h3>
+                  <p class="mt-2 text-sm text-slate-300">{p.description[lang]}</p>
+                  {p.tags.length > 0 && (
+                    <div class="mt-4 flex flex-wrap gap-2">
+                      {p.tags.map((tag) => (
+                        <span class="rounded-full bg-white/5 px-3 py-1 text-xs text-slate-300 transition-colors group-hover:bg-white/10">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <div class="mx-auto mt-12 max-w-xl rounded-[var(--radius-card)] border border-dashed border-line bg-surface/40 p-10 text-center">
+          <p class="text-slate-400">{t('projects.empty')}</p>
+          <a href={waContact} target="_blank" rel="noopener" class="btn-primary mt-6">
+            {t('projects.cta')}
+            <Icon name="arrow" class="h-4 w-4" />
+          </a>
+        </div>
+      )
+    }
+  </div>
+</section>
+
+<script>
+  const track = document.querySelector<HTMLElement>('[data-slider-track]');
+  const prev = document.querySelector<HTMLButtonElement>('[data-slider-prev]');
+  const next = document.querySelector<HTMLButtonElement>('[data-slider-next]');
+
+  if (track && prev && next) {
+    // Desplazamiento = ancho de una card + gap
+    const step = () => {
+      const card = track.querySelector<HTMLElement>('article');
+      const gap = parseFloat(getComputedStyle(track).columnGap || '24') || 24;
+      return card ? card.offsetWidth + gap : track.clientWidth * 0.8;
+    };
+
+    const update = () => {
+      const max = track.scrollWidth - track.clientWidth - 1;
+      prev.disabled = track.scrollLeft <= 0;
+      next.disabled = track.scrollLeft >= max;
+    };
+
+    prev.addEventListener('click', () =>
+      track.scrollBy({ left: -step(), behavior: 'smooth' }),
+    );
+    next.addEventListener('click', () =>
+      track.scrollBy({ left: step(), behavior: 'smooth' }),
+    );
+
+    track.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update, { passive: true });
+    update();
+
+    // Arrastre con el mouse (drag-to-scroll) en desktop
+    let down = false;
+    let startX = 0;
+    let startLeft = 0;
+    track.addEventListener('pointerdown', (e) => {
+      if (e.pointerType === 'mouse') {
+        down = true;
+        startX = e.clientX;
+        startLeft = track.scrollLeft;
+        track.style.cursor = 'grabbing';
+      }
+    });
+    track.addEventListener('pointermove', (e) => {
+      if (down) track.scrollLeft = startLeft - (e.clientX - startX);
+    });
+    const release = () => {
+      down = false;
+      track.style.cursor = '';
+    };
+    track.addEventListener('pointerup', release);
+    track.addEventListener('pointerleave', release);
+  }
+
+  // --- Cards interactivas: tilt 3D + parallax de imagen + spotlight ---
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll<HTMLElement>('[data-card]').forEach((card) => {
+    const inner = card.querySelector<HTMLElement>('[data-card-inner]');
+    const img = card.querySelector<HTMLElement>('[data-card-img]');
+    if (!inner) return;
+    let raf = 0;
+    let nx = 0;
+    let ny = 0;
+
+    const apply = () => {
+      inner.style.transform = `rotateX(${(-ny * 8).toFixed(2)}deg) rotateY(${(nx * 10).toFixed(2)}deg)`;
+      if (img) {
+        img.style.transform = `translate(${(-nx * 16).toFixed(1)}px, ${(-ny * 12 - 8).toFixed(1)}px) scale(1.07)`;
+      }
+      raf = 0;
+    };
+
+    card.addEventListener(
+      'pointermove',
+      (e) => {
+        const r = card.getBoundingClientRect();
+        const mx = e.clientX - r.left;
+        const my = e.clientY - r.top;
+        card.style.setProperty('--mx', `${mx}px`);
+        card.style.setProperty('--my', `${my}px`);
+        if (reduce || e.pointerType !== 'mouse') return;
+        nx = mx / r.width - 0.5;
+        ny = my / r.height - 0.5;
+        if (!raf) raf = requestAnimationFrame(apply);
+      },
+      { passive: true },
+    );
+
+    card.addEventListener('pointerleave', () => {
+      if (raf) {
+        cancelAnimationFrame(raf);
+        raf = 0;
+      }
+      inner.style.transform = '';
+      if (img) img.style.transform = '';
+    });
+  });
+</script>

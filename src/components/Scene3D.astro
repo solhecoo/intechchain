@@ -1,0 +1,178 @@
+---
+/**
+ * Escena 3D procedural (Three.js): una "red blockchain" de nodos conectados,
+ * generada por código. Decorativa (aria-hidden). Carga diferida, parallax de
+ * mouse/scroll y respeto a prefers-reduced-motion.
+ *
+ * 🔁 Para reemplazar por un modelo real exportado de Blender:
+ *    coloca tu archivo en /public/models/escena.glb y usa GLTFLoader en lugar
+ *    de buildNetwork(). Ver nota al final del <script>.
+ */
+---
+
+<div class="absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
+  <canvas data-scene3d class="h-full w-full opacity-0 transition-opacity duration-700"></canvas>
+</div>
+
+<script>
+  import * as THREE from 'three';
+
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-scene3d]');
+  if (canvas) {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      alpha: true,
+      antialias: true,
+      powerPreference: 'high-performance',
+    });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 100);
+    camera.position.z = 16;
+
+    const group = new THREE.Group();
+    scene.add(group);
+
+    // ---- Red de nodos procedural ----
+    const COUNT = 64;
+    const RADIUS = 9;
+    const nodes: THREE.Vector3[] = [];
+    for (let i = 0; i < COUNT; i++) {
+      // distribución cuasi-uniforme en esfera (espiral de Fibonacci)
+      const phi = Math.acos(1 - (2 * (i + 0.5)) / COUNT);
+      const theta = Math.PI * (1 + Math.sqrt(5)) * i;
+      const r = RADIUS * (0.55 + 0.45 * Math.cbrt((i % 7) / 7));
+      nodes.push(
+        new THREE.Vector3(
+          r * Math.sin(phi) * Math.cos(theta),
+          r * Math.sin(phi) * Math.sin(theta),
+          r * Math.cos(phi),
+        ),
+      );
+    }
+
+    // Puntos (nodos)
+    const nodeGeo = new THREE.BufferGeometry().setFromPoints(nodes);
+    const nodeMat = new THREE.PointsMaterial({
+      color: 0x5689ff,
+      size: 0.42,
+      sizeAttenuation: true,
+      transparent: true,
+      opacity: 0.95,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    });
+    group.add(new THREE.Points(nodeGeo, nodeMat));
+
+    // Conexiones (aristas entre nodos cercanos)
+    const linePositions: number[] = [];
+    const THRESHOLD = 5.2;
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        if (nodes[i].distanceTo(nodes[j]) < THRESHOLD) {
+          linePositions.push(
+            nodes[i].x, nodes[i].y, nodes[i].z,
+            nodes[j].x, nodes[j].y, nodes[j].z,
+          );
+        }
+      }
+    }
+    const lineGeo = new THREE.BufferGeometry();
+    lineGeo.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
+    const lineMat = new THREE.LineBasicMaterial({
+      color: 0x34d2ff,
+      transparent: true,
+      opacity: 0.18,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    group.add(new THREE.LineSegments(lineGeo, lineMat));
+
+    group.rotation.x = 0.5;
+
+    // ---- Tamaño / resize ----
+    function resize() {
+      const parent = canvas!.parentElement!;
+      const w = parent.clientWidth;
+      const h = parent.clientHeight;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    // ---- Parallax mouse + scroll ----
+    const pointer = { x: 0, y: 0 };
+    const target = { x: 0, y: 0 };
+    window.addEventListener(
+      'pointermove',
+      (e) => {
+        target.x = (e.clientX / window.innerWidth - 0.5) * 2;
+        target.y = (e.clientY / window.innerHeight - 0.5) * 2;
+      },
+      { passive: true },
+    );
+    let scrollY = 0;
+    window.addEventListener(
+      'scroll',
+      () => {
+        scrollY = window.scrollY;
+      },
+      { passive: true },
+    );
+
+    // Aparece suavemente
+    requestAnimationFrame(() => canvas!.classList.remove('opacity-0'));
+
+    // ---- Pausa cuando no es visible ----
+    let visible = true;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting;
+        if (visible && !reduceMotion) loop();
+      },
+      { threshold: 0 },
+    );
+    io.observe(canvas);
+
+    let raf = 0;
+    function render() {
+      pointer.x += (target.x - pointer.x) * 0.05;
+      pointer.y += (target.y - pointer.y) * 0.05;
+      group.rotation.y += 0.0016;
+      group.rotation.x = 0.5 + pointer.y * 0.25;
+      group.position.y = scrollY * 0.004; // parallax de scroll
+      camera.position.x = pointer.x * 1.4;
+      camera.lookAt(scene.position);
+      renderer.render(scene, camera);
+    }
+
+    function loop() {
+      if (!visible || reduceMotion || document.hidden) {
+        cancelAnimationFrame(raf);
+        return;
+      }
+      render();
+      raf = requestAnimationFrame(loop);
+    }
+
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && visible && !reduceMotion) loop();
+    });
+
+    if (reduceMotion) {
+      render(); // un solo fotograma estático
+    } else {
+      loop();
+    }
+
+    // 🔁 Para usar un .glb real de Blender en lugar de la red procedural:
+    //   import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    //   new GLTFLoader().load('/models/escena.glb', (gltf) => group.add(gltf.scene));
+    // y elimina los bloques de "Red de nodos procedural".
+  }
+</script>

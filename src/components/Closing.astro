@@ -1,0 +1,88 @@
+---
+import { useTranslations, whatsappUrl, getDict, type Lang } from '../i18n/ui';
+import Icon from './Icon.astro';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const dict = getDict(lang);
+const waContact = whatsappUrl(dict.contact.whatsappMessage);
+
+// Partículas decorativas dentro del banner
+const dots = [
+  { top: '18%', left: '10%', size: 10, dur: 6, delay: 0 },
+  { top: '70%', left: '16%', size: 7, dur: 5, delay: 1.1 },
+  { top: '28%', left: '88%', size: 12, dur: 7, delay: 0.5 },
+  { top: '76%', left: '82%', size: 8, dur: 5.6, delay: 1.6 },
+];
+---
+
+<section id="contact" class="scroll-mt-24 border-t border-line/40 py-20 sm:py-28">
+  <div class="container-x">
+    <div
+      class="relative isolate overflow-hidden rounded-[2rem] bg-gradient-to-br from-brand-600 via-brand-700 to-brand-900 px-6 py-16 text-center sm:px-10 sm:py-20"
+      data-reveal
+    >
+      <!-- Capas decorativas -->
+      <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+        <div
+          class="absolute inset-0 opacity-[0.14]"
+          style="background-image:linear-gradient(to right,#fff 1px,transparent 1px),linear-gradient(to bottom,#fff 1px,transparent 1px);background-size:54px 54px;mask-image:radial-gradient(ellipse 75% 75% at 50% 40%,#000,transparent)"
+        >
+        </div>
+        <div class="absolute -left-20 top-0 h-72 w-72 rounded-full bg-cyan-accent/20 blur-[110px]"></div>
+        <div class="absolute -right-16 bottom-0 h-72 w-72 rounded-full bg-white/10 blur-[110px]"></div>
+        {
+          dots.map((d) => (
+            <span
+              class="absolute rounded-full bg-white/70"
+              style={`top:${d.top};left:${d.left};width:${d.size}px;height:${d.size}px;box-shadow:0 0 14px #fff9;animation:floaty ${d.dur}s ease-in-out ${d.delay}s infinite`}
+            />
+          ))
+        }
+      </div>
+
+      <div class="relative mx-auto max-w-2xl">
+        <span
+          class="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-white backdrop-blur-sm"
+        >
+          {t('cta.eyebrow')}
+        </span>
+
+        <h2
+          class="mt-6 text-balance text-3xl font-extrabold leading-[1.1] tracking-tight text-white sm:text-5xl"
+          data-kinetic
+        >
+          {t('cta.title')}
+        </h2>
+
+        <p class="mx-auto mt-5 max-w-xl text-pretty text-base leading-relaxed text-brand-50/90 sm:text-lg">
+          {t('cta.body')}
+        </p>
+
+        <!-- CTA protagonista con glow pulsante -->
+        <div class="relative mt-10 inline-flex">
+          <span
+            class="absolute inset-0 -z-10 animate-pulse rounded-full bg-[#25D366] opacity-50 blur-2xl"
+            aria-hidden="true"
+          >
+          </span>
+          <a
+            href={waContact}
+            target="_blank"
+            rel="noopener"
+            class="btn-whatsapp px-8 py-4 text-base hover:scale-[1.03]"
+            data-magnetic
+          >
+            <Icon name="whatsapp" class="h-5 w-5" />
+            {t('contact.whatsappLabel')}
+          </a>
+        </div>
+
+        <p class="mt-5 text-sm text-brand-50/70">{t('contact.body')}</p>
+      </div>
+    </div>
+  </div>
+</section>

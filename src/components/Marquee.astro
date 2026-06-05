@@ -1,0 +1,39 @@
+---
+import { getDict, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const dict = getDict(lang);
+const items: string[] = dict.marquee;
+// Se duplica el contenido para un loop continuo (la animación traslada -50%).
+const loop = [...items, ...items];
+---
+
+<section
+  class="marquee group relative overflow-hidden border-y border-line/40 bg-ink-900/40 py-6"
+  aria-label="Tecnologías"
+>
+  <div class="marquee-track">
+    {
+      loop.map((item) => (
+        <span class="flex items-center gap-6 px-6 text-2xl font-semibold tracking-tight text-slate-400 sm:text-3xl">
+          {item}
+          <span class="inline-block h-2 w-2 rounded-full bg-brand-500" aria-hidden="true" />
+        </span>
+      ))
+    }
+  </div>
+  <!-- Difuminado en los bordes -->
+  <div
+    class="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-ink-950 to-transparent"
+    aria-hidden="true"
+  >
+  </div>
+  <div
+    class="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-ink-950 to-transparent"
+    aria-hidden="true"
+  >
+  </div>
+</section>

@@ -1,0 +1,101 @@
+---
+import '../styles/global.css';
+import { contact, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  title: string;
+  description: string;
+  ogAlt: string;
+}
+const { lang, title, description, ogAlt } = Astro.props;
+
+const site = Astro.site ?? new URL('https://solhecoo.github.io');
+const base = import.meta.env.BASE_URL; // p.ej. "/intechchain/"
+
+// hreflang: la misma página (single-page) en cada idioma
+const esHref = new URL(base, site).href;
+const enHref = new URL(`${base}en/`, site).href;
+
+const canonical = lang === 'es' ? esHref : enHref;
+const ogImage = new URL(`${base}og-image.svg`, site).href;
+const faviconHref = `${base}favicon.svg`;
+
+const orgJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfessionalService',
+  name: 'Intechchain',
+  description,
+  url: esHref,
+  image: ogImage,
+  logo: new URL(faviconHref, site).href,
+  areaServed: 'CO',
+  address: {
+    '@type': 'PostalAddress',
+    addressCountry: 'CO',
+  },
+  contactPoint: {
+    '@type': 'ContactPoint',
+    contactType: 'sales',
+    telephone: '+57 324 395 1987',
+    availableLanguage: ['Spanish', 'English'],
+  },
+  sameAs: [contact.waLink],
+};
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href={faviconHref} />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <!-- hreflang -->
+    <link rel="alternate" hreflang="es" href={esHref} />
+    <link rel="alternate" hreflang="en" href={enHref} />
+    <link rel="alternate" hreflang="x-default" href={esHref} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Intechchain" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:alt" content={ogAlt} />
+    <meta property="og:locale" content={lang === 'es' ? 'es_CO' : 'en_US'} />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <meta name="theme-color" content="#050a18" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Fuente Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    />
+
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(orgJsonLd)} />
+  </head>
+  <body class="min-h-screen antialiased">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-brand-500 focus:px-4 focus:py-2 focus:text-white"
+    >
+      {lang === 'es' ? 'Saltar al contenido' : 'Skip to content'}
+    </a>
+    <slot />
+  </body>
+</html>

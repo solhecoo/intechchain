@@ -1,0 +1,84 @@
+---
+/**
+ * Lluvia "matrix" temática blockchain (binario + hex) sobre canvas.
+ * Sutil, en tonos de marca, con parallax y pausada fuera de viewport.
+ * Decorativa (aria-hidden). Respeta prefers-reduced-motion.
+ */
+interface Props {
+  class?: string;
+  parallax?: number;
+  opacity?: number;
+}
+const { class: className = '', parallax = 0.08, opacity = 0.16 } = Astro.props;
+---
+
+<div
+  class:list={['pointer-events-none absolute inset-x-0 -inset-y-[14%] -z-10 overflow-hidden', className]}
+  aria-hidden="true"
+  data-parallax={parallax}
+>
+  <canvas data-matrix class="h-full w-full" style={`opacity:${opacity}`}></canvas>
+</div>
+
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const chars = '01 0123456789ABCDEF ⬡ Ξ ₿'.replace(/\s/g, '').split('');
+
+  document.querySelectorAll<HTMLCanvasElement>('[data-matrix]').forEach((canvas) => {
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let w = 0;
+    let h = 0;
+    let cols = 0;
+    let fontSize = 16;
+    let drops: number[] = [];
+
+    const resize = () => {
+      const p = canvas.parentElement!;
+      w = p.clientWidth;
+      h = p.clientHeight;
+      const dpr = Math.min(window.devicePixelRatio, 2);
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      fontSize = w < 640 ? 14 : 18;
+      cols = Math.ceil(w / fontSize);
+      drops = Array.from({ length: cols }, () => Math.random() * -25);
+      ctx.font = `${fontSize}px ui-monospace, monospace`;
+    };
+    resize();
+    window.addEventListener('resize', resize, { passive: true });
+
+    let visible = false;
+    let last = 0;
+    const draw = (t: number) => {
+      if (!visible || reduce) return;
+      if (t - last > 60) {
+        last = t;
+        ctx.fillStyle = 'rgba(5,10,24,0.14)';
+        ctx.fillRect(0, 0, w, h);
+        for (let i = 0; i < cols; i++) {
+          const ch = chars[(Math.random() * chars.length) | 0];
+          const x = i * fontSize;
+          const y = drops[i] * fontSize;
+          ctx.fillStyle =
+            Math.random() > 0.97 ? 'rgba(52,210,255,0.95)' : 'rgba(86,137,255,0.6)';
+          ctx.fillText(ch, x, y);
+          if (y > h && Math.random() > 0.975) drops[i] = Math.random() * -20;
+          drops[i]++;
+        }
+      }
+      requestAnimationFrame(draw);
+    };
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting;
+        if (visible && !reduce) requestAnimationFrame(draw);
+      },
+      { threshold: 0 },
+    );
+    io.observe(canvas);
+  });
+</script>

@@ -1,0 +1,324 @@
+@import 'tailwindcss';
+
+/* ---- Tokens de marca Intechchain (fondo oscuro + acento azul) ---- */
+@theme {
+  --color-ink-950: #050a18;
+  --color-ink-900: #070d20;
+  --color-ink-800: #0c1530;
+  --color-ink-700: #131e40;
+  --color-surface: #0e1730;
+  --color-surface-2: #14213f;
+  --color-line: #1f2c50;
+
+  --color-brand-50: #eef4ff;
+  --color-brand-100: #d9e6ff;
+  --color-brand-200: #b8d0ff;
+  --color-brand-300: #88b1ff;
+  --color-brand-400: #5689ff;
+  --color-brand-500: #3b6fff;
+  --color-brand-600: #2451f0;
+  --color-brand-700: #1d3fcc;
+  --color-brand-800: #1c37a3;
+  --color-brand-900: #1d3380;
+
+  --color-cyan-accent: #34d2ff;
+
+  --font-sans:
+    'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    Helvetica, Arial, sans-serif;
+
+  --radius-card: 1rem;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--color-ink-950);
+  background-image:
+    radial-gradient(60% 40% at 50% -5%, rgba(36, 81, 240, 0.12) 0%, transparent 60%),
+    radial-gradient(50% 30% at 100% 0%, rgba(52, 210, 255, 0.06) 0%, transparent 55%);
+  background-attachment: fixed;
+  color: #dbe3f4;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Respeta usuarios que prefieren menos movimiento */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Resalta el ancla con offset por el header sticky */
+:target {
+  scroll-margin-top: 6rem;
+}
+
+/* ---- Reveal on scroll ---- */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Partículas flotantes (robot) */
+@keyframes floaty {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -18px, 0);
+  }
+}
+
+/* ---- Proyectos: flotación suave del dispositivo + atmósfera de color ---- */
+@keyframes float-soft {
+  0%,
+  100% {
+    transform: translateY(-10px);
+  }
+  50% {
+    transform: translateY(4px);
+  }
+}
+.float-soft {
+  animation: float-soft 7s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(6%, -5%, 0) scale(1.08);
+  }
+}
+.drift-slow {
+  animation: drift 20s ease-in-out infinite;
+}
+.drift-slower {
+  animation: drift 28s ease-in-out infinite reverse;
+}
+
+/* ---- Lenis (scroll suave con inercia) ---- */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+/* ---- Títulos cinéticos (reveal por palabra) ---- */
+.kinetic-word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+}
+.kinetic-inner {
+  display: inline-block;
+  transform: translateY(115%);
+  transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.kinetic.is-in .kinetic-inner {
+  transform: none;
+}
+
+/* ---- Marquee infinito ---- */
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.marquee-track {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: marquee 28s linear infinite;
+  will-change: transform;
+}
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+/* ---- Rotación continua (órbitas/anillos) ---- */
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.spin-slow {
+  animation: spin-slow 40s linear infinite;
+}
+.spin-rev {
+  animation: spin-slow 60s linear infinite reverse;
+}
+
+/* ---- Caminos/circuitos: flujo de datos por los trazos ---- */
+@keyframes flow {
+  to {
+    stroke-dashoffset: -240;
+  }
+}
+.flow {
+  stroke-dasharray: 5 9;
+  animation: flow 4s linear infinite;
+}
+.flow-2 {
+  animation-duration: 6s;
+}
+.flow-3 {
+  animation-duration: 5s;
+}
+/* ---- Bloques: pulso de "validación" ---- */
+@keyframes block-pulse {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+.block-pulse {
+  animation: block-pulse 3.2s ease-in-out infinite;
+}
+
+/* ---- Cursor personalizado ---- */
+.cursor-ring,
+.cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 60;
+  pointer-events: none;
+  border-radius: 9999px;
+  translate: -50% -50%;
+  mix-blend-mode: difference;
+}
+.cursor-ring {
+  width: 34px;
+  height: 34px;
+  border: 1.5px solid #fff;
+  transition:
+    width 0.25s ease,
+    height 0.25s ease,
+    background-color 0.25s ease;
+}
+.cursor-dot {
+  width: 6px;
+  height: 6px;
+  background: #fff;
+}
+.cursor-ring.is-hover {
+  width: 56px;
+  height: 56px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html.has-cursor,
+  html.has-cursor * {
+    cursor: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kinetic-inner {
+    transform: none;
+    transition: none;
+  }
+  .marquee-track,
+  .spin-slow,
+  .spin-rev,
+  .flow,
+  .block-pulse,
+  .float-soft,
+  .drift-slow,
+  .drift-slower {
+    animation: none;
+  }
+  .cursor-ring,
+  .cursor-dot {
+    display: none;
+  }
+}
+
+/* Utilidades de marca reutilizables (Tailwind v4: @utility permite componer) */
+@utility container-x {
+  @apply mx-auto w-full max-w-6xl px-5 sm:px-8;
+}
+
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3
+    text-sm font-semibold transition-all duration-200
+    focus-visible:outline-2 focus-visible:outline-offset-2
+    focus-visible:outline-brand-400;
+}
+@utility btn-primary {
+  @apply btn bg-brand-500 text-white shadow-lg shadow-brand-900/40
+    hover:bg-brand-400 hover:-translate-y-0.5;
+}
+@utility btn-ghost {
+  @apply btn border border-line bg-white/5 text-white
+    hover:border-brand-400 hover:bg-white/10;
+}
+@utility btn-whatsapp {
+  @apply btn bg-[#25D366] text-[#04231a] shadow-lg shadow-[#25D366]/25
+    hover:bg-[#1ebe5a] hover:-translate-y-0.5;
+}
+
+@utility eyebrow {
+  @apply text-xs font-semibold uppercase tracking-[0.18em] text-brand-300;
+}
+
+@utility card {
+  @apply rounded-[var(--radius-card)] border border-line bg-surface/70 p-7
+    transition-all duration-200;
+}
+
+/* Oculta la scrollbar manteniendo el scroll (slider) */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}

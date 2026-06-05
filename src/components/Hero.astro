@@ -1,0 +1,103 @@
+---
+import { useTranslations, whatsappUrl, getDict, type Lang } from '../i18n/ui';
+import Icon from './Icon.astro';
+import Scene3D from './Scene3D.astro';
+import CircuitPaths from './CircuitPaths.astro';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const dict = getDict(lang);
+const rotating: string[] = dict.hero.rotating;
+const waContact = whatsappUrl(dict.contact.whatsappMessage);
+---
+
+<section class="relative overflow-hidden pt-32 pb-20 sm:pt-40 sm:pb-28">
+  <!-- Escena 3D procedural (Three.js) -->
+  <Scene3D />
+
+  <!-- Caminos/circuitos parallax -->
+  <CircuitPaths class="-left-24 bottom-0 h-[22rem] w-[22rem] opacity-40" parallax={0.1} />
+  <CircuitPaths class="-right-24 top-24 h-[20rem] w-[20rem] opacity-30" parallax={0.16} flip />
+
+  <!-- Fondo decorativo con parallax -->
+  <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+    <div
+      class="absolute left-1/2 top-0 -ml-[21rem] h-[42rem] w-[42rem] rounded-full bg-brand-600/20 blur-[120px]"
+      data-parallax="0.25"
+    >
+    </div>
+    <div
+      class="absolute right-0 top-40 h-72 w-72 rounded-full bg-cyan-accent/10 blur-[100px]"
+      data-parallax="0.5"
+    >
+    </div>
+    <div
+      class="absolute inset-0 opacity-[0.18]"
+      style="background-image:linear-gradient(to right,#1f2c50 1px,transparent 1px),linear-gradient(to bottom,#1f2c50 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(ellipse 70% 60% at 50% 0%,#000 40%,transparent 100%)"
+    >
+    </div>
+  </div>
+
+  <div class="container-x">
+    <div class="mx-auto max-w-3xl text-center">
+      <p class="eyebrow mb-5">{t('hero.eyebrow')}</p>
+
+      <!-- Taglines rotativos -->
+      <div class="mb-4 flex h-7 items-center justify-center" aria-hidden="true">
+        <span
+          class="rounded-full border border-brand-500/30 bg-brand-500/10 px-4 py-1.5 text-sm font-semibold text-brand-200"
+          data-rotating
+        >
+          {rotating[0]}
+        </span>
+      </div>
+
+      <h1
+        class="text-balance text-4xl font-extrabold leading-[1.1] tracking-tight text-white sm:text-6xl"
+        data-kinetic
+      >
+        {t('hero.title')}
+      </h1>
+
+      <p class="mx-auto mt-6 max-w-2xl text-pretty text-lg leading-relaxed text-slate-300">
+        {t('hero.subtitle')}
+      </p>
+
+      <div class="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+        <a
+          href={waContact}
+          target="_blank"
+          rel="noopener"
+          class="btn-whatsapp w-full sm:w-auto"
+          data-magnetic
+        >
+          <Icon name="whatsapp" class="h-5 w-5" />
+          {t('hero.ctaPrimary')}
+        </a>
+        <a href="#services" class="btn-ghost w-full sm:w-auto">
+          {t('hero.ctaSecondary')}
+          <Icon name="arrow" class="h-4 w-4" />
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script is:inline define:vars={{ rotating }}>
+  const el = document.querySelector('[data-rotating]');
+  if (el && rotating.length > 1) {
+    let i = 0;
+    setInterval(() => {
+      i = (i + 1) % rotating.length;
+      el.style.opacity = '0';
+      setTimeout(() => {
+        el.textContent = rotating[i];
+        el.style.opacity = '1';
+      }, 250);
+    }, 2800);
+    el.style.transition = 'opacity 250ms ease';
+  }
+</script>

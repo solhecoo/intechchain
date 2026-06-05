@@ -1,0 +1,202 @@
+---
+import { useTranslations, whatsappUrl, getDict, type Lang } from '../i18n/ui';
+import Icon from './Icon.astro';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const dict = getDict(lang);
+const waContact = whatsappUrl(dict.contact.whatsappMessage);
+
+// Partículas decorativas alrededor del robot
+const dots = [
+  { top: '12%', left: '8%', size: 10, color: '#3b6fff', dur: 5, delay: 0 },
+  { top: '24%', left: '86%', size: 14, color: '#34d2ff', dur: 6.5, delay: 0.8 },
+  { top: '62%', left: '4%', size: 8, color: '#34d2ff', dur: 5.5, delay: 1.4 },
+  { top: '72%', left: '90%', size: 12, color: '#3b6fff', dur: 7, delay: 0.4 },
+  { top: '44%', left: '94%', size: 6, color: '#88b1ff', dur: 4.8, delay: 1.1 },
+];
+---
+
+<section class="relative overflow-hidden border-t border-line/40 py-20 sm:py-28">
+  <!-- Resplandor de fondo con parallax -->
+  <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+    <div
+      class="absolute left-1/2 top-1/2 h-[34rem] w-[34rem] -translate-y-1/2 -ml-[17rem] rounded-full bg-brand-600/15 blur-[120px]"
+      data-parallax="0.15"
+    >
+    </div>
+  </div>
+
+  <div class="container-x">
+    <div class="grid items-center gap-10 lg:grid-cols-2">
+      <!-- Texto -->
+      <div data-reveal>
+        <p class="eyebrow mb-3">{t('robot.eyebrow')}</p>
+        <h2 class="text-balance text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl" data-kinetic>
+          {t('robot.title')}
+        </h2>
+        <p class="mt-5 max-w-lg text-pretty leading-relaxed text-slate-300">
+          {t('robot.body')}
+        </p>
+        <a href={waContact} target="_blank" rel="noopener" class="btn-primary mt-8" data-magnetic>
+          {t('robot.cta')}
+          <Icon name="arrow" class="h-4 w-4" />
+        </a>
+      </div>
+
+      <!-- Robot animado -->
+      <div class="group flex justify-center [perspective:1200px]" data-robot-stage>
+        <figure
+          class="relative m-0 flex w-full max-w-md items-center justify-center transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+        >
+          <!-- Resplandor pulsante detrás -->
+          <div
+            class="absolute left-1/2 top-1/2 z-0 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-500/25 blur-3xl"
+            data-robot-glow
+            aria-hidden="true"
+          >
+          </div>
+
+          <!-- Partículas flotantes -->
+          {
+            dots.map((d) => (
+              <span
+                class="pointer-events-none absolute z-0 rounded-full"
+                aria-hidden="true"
+                style={`top:${d.top};left:${d.left};width:${d.size}px;height:${d.size}px;background:${d.color};opacity:.55;box-shadow:0 0 12px ${d.color};animation:floaty ${d.dur}s ease-in-out ${d.delay}s infinite`}
+              />
+            ))
+          }
+
+          <div class="relative z-10 w-full max-w-sm">
+            <!-- bob + balanceo -->
+            <div data-robot-float class="will-change-transform [transform-style:preserve-3d]">
+              <!-- giro 3D autónomo -->
+              <div data-robot-idle class="[transform-style:preserve-3d]">
+                <!-- inclinación según el mouse -->
+                <img
+                  src={`${import.meta.env.BASE_URL}robot.png`}
+                  alt={t('robot.imageAlt')}
+                  width="520"
+                  height="898"
+                  loading="lazy"
+                  decoding="async"
+                  class="mx-auto w-full select-none drop-shadow-[0_30px_45px_rgba(0,0,0,0.55)] will-change-transform [transform-style:preserve-3d]"
+                  data-robot
+                />
+              </div>
+            </div>
+            <!-- Sombra en el "suelo" -->
+            <div
+              class="mx-auto mt-[-1rem] h-6 w-2/3 rounded-[100%] bg-black/50 blur-xl"
+              data-robot-shadow
+              aria-hidden="true"
+            >
+            </div>
+          </div>
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const stage = document.querySelector<HTMLElement>('[data-robot-stage]');
+  const floatEl = document.querySelector<HTMLElement>('[data-robot-float]');
+  const idleEl = document.querySelector<HTMLElement>('[data-robot-idle]');
+  const robot = document.querySelector<HTMLElement>('[data-robot]');
+  const shadow = document.querySelector<HTMLElement>('[data-robot-shadow]');
+  const glow = document.querySelector<HTMLElement>('[data-robot-glow]');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (stage && floatEl && idleEl && robot && !reduceMotion) {
+    const opts: KeyframeAnimationOptions = {
+      duration: 4200,
+      iterations: Infinity,
+      easing: 'ease-in-out',
+    };
+
+    // Flotación + balanceo
+    floatEl.animate(
+      [
+        { transform: 'translateY(0) rotateZ(-1.2deg)' },
+        { transform: 'translateY(-16px) rotateZ(1.2deg)' },
+        { transform: 'translateY(0) rotateZ(-1.2deg)' },
+      ],
+      opts,
+    );
+
+    // Giro 3D autónomo (vaivén suave en Y)
+    idleEl.animate(
+      [
+        { transform: 'rotateY(-9deg)' },
+        { transform: 'rotateY(9deg)' },
+        { transform: 'rotateY(-9deg)' },
+      ],
+      { duration: 7000, iterations: Infinity, easing: 'ease-in-out' },
+    );
+
+    // Sombra acompaña la flotación
+    shadow?.animate(
+      [
+        { transform: 'scaleX(1)', opacity: '0.5' },
+        { transform: 'scaleX(0.8)', opacity: '0.3' },
+        { transform: 'scaleX(1)', opacity: '0.5' },
+      ],
+      opts,
+    );
+
+    // Resplandor pulsante
+    glow?.animate(
+      [
+        { opacity: '0.35', transform: 'translate(-50%,-50%) scale(0.9)' },
+        { opacity: '0.65', transform: 'translate(-50%,-50%) scale(1.1)' },
+        { opacity: '0.35', transform: 'translate(-50%,-50%) scale(0.9)' },
+      ],
+      { duration: 3600, iterations: Infinity, easing: 'ease-in-out' },
+    );
+
+    // Inclinación 3D de la imagen siguiendo el cursor (suavizado)
+    const cur = { rx: 0, ry: 0 };
+    const tgt = { rx: 0, ry: 0 };
+    let active = false;
+    const tick = () => {
+      cur.rx += (tgt.rx - cur.rx) * 0.09;
+      cur.ry += (tgt.ry - cur.ry) * 0.09;
+      robot.style.transform = `rotateX(${cur.rx}deg) rotateY(${cur.ry}deg)`;
+      if (Math.abs(tgt.rx - cur.rx) > 0.04 || Math.abs(tgt.ry - cur.ry) > 0.04) {
+        requestAnimationFrame(tick);
+      } else {
+        active = false;
+      }
+    };
+    const start = () => {
+      if (!active) {
+        active = true;
+        requestAnimationFrame(tick);
+      }
+    };
+    stage.addEventListener(
+      'pointermove',
+      (e) => {
+        const r = stage.getBoundingClientRect();
+        tgt.ry = ((e.clientX - r.left) / r.width - 0.5) * 22;
+        tgt.rx = -((e.clientY - r.top) / r.height - 0.5) * 16;
+        start();
+      },
+      { passive: true },
+    );
+    stage.addEventListener(
+      'pointerleave',
+      () => {
+        tgt.rx = 0;
+        tgt.ry = 0;
+        start();
+      },
+      { passive: true },
+    );
+  }
+</script>

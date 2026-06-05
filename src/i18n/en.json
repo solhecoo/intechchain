@@ -1,0 +1,147 @@
+{
+  "meta": {
+    "title": "Intechchain — Technology solutions that transform businesses",
+    "description": "Colombian technology company. Custom software development, blockchain, banking software and data analytics to drive your company's digital transformation.",
+    "ogAlt": "Intechchain — Innovation and technology"
+  },
+  "nav": {
+    "services": "Services",
+    "about": "About",
+    "projects": "Projects",
+    "clients": "Clients",
+    "contact": "Contact",
+    "cta": "Talk to an advisor"
+  },
+  "hero": {
+    "eyebrow": "Digital transformation",
+    "rotating": [
+      "Innovation in real time",
+      "Protect your information",
+      "Drive your transformation"
+    ],
+    "title": "Technology solutions that transform businesses",
+    "subtitle": "Where technology and innovation come together to power your business. We build custom software, blockchain and data analytics tailored to your company.",
+    "ctaPrimary": "Talk to an advisor",
+    "ctaSecondary": "View services"
+  },
+  "about": {
+    "eyebrow": "Who we are",
+    "title": "Where technology and innovation come together to power your business",
+    "body": "At Intech, we specialize in delivering technology solutions tailored to our clients' needs. From custom software development to blockchain implementation and data analytics, we work with you to drive your company's digital transformation.",
+    "note": "We work with world-renowned brands and organizations, adapting to companies of every size."
+  },
+  "services": {
+    "eyebrow": "Our Services",
+    "title": "Technology solutions that transform businesses",
+    "body": "At Intechchain we combine custom development, fintech, blockchain, AI agents and consulting to cover every technology need of your company. We build innovative tools that drive your growth, efficiency and security.",
+    "cta": "Learn more",
+    "items": {
+      "software": {
+        "title": "Custom Software",
+        "description": "Scalable, secure web and mobile applications, designed and built to solve your business's specific challenges."
+      },
+      "fintech": {
+        "title": "Fintech & Banking",
+        "description": "Robust financial platforms: payments, wallets and compliance, focused on security and a flawless user experience."
+      },
+      "blockchain": {
+        "title": "Blockchain & Smart Contracts",
+        "description": "Decentralized solutions, smart contracts and digital assets for more transparent, traceable and trustworthy processes."
+      },
+      "ai": {
+        "title": "AI Agents",
+        "description": "Intelligent agents and copilots that automate processes, analyze data and boost your team's productivity 24/7."
+      },
+      "consulting": {
+        "title": "Tech Consulting",
+        "description": "Strategic guidance to define your architecture, adopt new technologies and accelerate your digital transformation."
+      },
+      "security": {
+        "title": "Cybersecurity",
+        "description": "Audits, hardening and continuous monitoring to protect your critical systems and your customers' data."
+      }
+    }
+  },
+  "metrics": {
+    "eyebrow": "Results",
+    "title": "Results that last",
+    "items": {
+      "risk": {
+        "label": "Risk Reduction",
+        "description": "Fewer vulnerabilities in critical systems."
+      },
+      "goals": {
+        "label": "Goals achieved",
+        "description": "Satisfied clients with results that last."
+      }
+    }
+  },
+  "projects": {
+    "eyebrow": "Portfolio",
+    "title": "Projects with Value",
+    "body": "Our projects reflect our ability to implement innovative, future-ready solutions.",
+    "empty": "We'll share our success stories here soon.",
+    "cta": "Request"
+  },
+  "clients": {
+    "eyebrow": "They trust us",
+    "title": "We work with world-renowned brands and organizations",
+    "body": "We adapt to companies of every size.",
+    "empty": "Our clients, coming soon."
+  },
+  "cta": {
+    "eyebrow": "Take the next step",
+    "title": "Transform your company with high-impact technology",
+    "body": "Discover how our solutions can take your business to the next level, improving efficiency, security and your customers' experience.",
+    "button": "Talk to an advisor"
+  },
+  "contact": {
+    "eyebrow": "Contact",
+    "title": "Let's talk about your project",
+    "body": "Tell us what you need and an advisor will reply on WhatsApp.",
+    "whatsappLabel": "Message us on WhatsApp",
+    "phoneLabel": "Phone",
+    "whatsappMessage": "Hi Intechchain, I'd like to get advice about your services."
+  },
+  "marquee": [
+    "Software Development",
+    "Blockchain",
+    "Banking Software",
+    "Data Analytics",
+    "Cybersecurity",
+    "Digital Transformation",
+    "Artificial Intelligence",
+    "Smart Contracts",
+    "Mobile Apps"
+  ],
+  "ai": {
+    "eyebrow": "Artificial Intelligence",
+    "title": "We work with AI. We are pro-AI.",
+    "body": "We embed artificial intelligence into every solution we build: process automation, predictive models and intelligent assistants that empower your team. We adopt AI responsibly to accelerate your digital transformation.",
+    "imageAlt": "3D blocks representing data and artificial intelligence",
+    "points": [
+      "Intelligent automation",
+      "Custom AI models",
+      "AI assistants and copilots"
+    ],
+    "cta": "Talk to an advisor"
+  },
+  "robot": {
+    "eyebrow": "Innovation",
+    "title": "Technology that works for you",
+    "body": "Automation, artificial intelligence and tailor-made systems that take your company to the next level.",
+    "imageAlt": "Intechchain 3D robot",
+    "cta": "Talk to an advisor"
+  },
+  "footer": {
+    "tagline": "Technology solutions that transform businesses.",
+    "navTitle": "Navigation",
+    "contactTitle": "Contact",
+    "rights": "All rights reserved."
+  },
+  "lang": {
+    "label": "Language",
+    "es": "Español",
+    "en": "English"
+  }
+}

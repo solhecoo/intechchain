@@ -130,6 +130,20 @@ body {
   animation: drift 28s ease-in-out infinite reverse;
 }
 
+/* En móvil detenemos las animaciones decorativas continuas (flotación, deriva,
+   giros, flujo) para mejorar el rendimiento. El diseño se mantiene estático. */
+@media (max-width: 768px) {
+  .float-soft,
+  .drift-slow,
+  .drift-slower,
+  .spin-slow,
+  .spin-rev,
+  .flow,
+  .block-pulse {
+    animation: none;
+  }
+}
+
 /* ---- Lenis (scroll suave con inercia) ---- */
 html.lenis,
 html.lenis body {

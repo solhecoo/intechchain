@@ -14,10 +14,14 @@
   import Lenis from 'lenis';
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // En táctil/móvil usamos scroll nativo (más fluido y sin rAF constante).
+  const lowPower =
+    window.matchMedia('(pointer: coarse)').matches ||
+    window.matchMedia('(max-width: 768px)').matches;
 
   // ---- Scroll suave (Lenis) ----
   let lenis: Lenis | null = null;
-  if (!reduceMotion) {
+  if (!reduceMotion && !lowPower) {
     lenis = new Lenis({ lerp: 0.1, wheelMultiplier: 1, smoothWheel: true });
     const raf = (time: number) => {
       lenis!.raf(time);
@@ -97,7 +101,7 @@
     document.querySelectorAll<HTMLElement>('[data-parallax]'),
   ).map((el) => ({ el, factor: parseFloat(el.dataset.parallax || '0') }));
 
-  if (!reduceMotion && parallaxEls.length) {
+  if (!reduceMotion && !lowPower && parallaxEls.length) {
     let ticking = false;
     const update = (y: number) => {
       for (const { el, factor } of parallaxEls) {

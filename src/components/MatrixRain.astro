@@ -22,8 +22,15 @@ const { class: className = '', parallax = 0.08, opacity = 0.16 } = Astro.props;
 
 <script>
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // En móvil / táctil omitimos la lluvia (canvas + rAF) para aligerar.
+  const lowPower =
+    window.matchMedia('(pointer: coarse)').matches ||
+    window.matchMedia('(max-width: 768px)').matches;
   const chars = '01 0123456789ABCDEF ⬡ Ξ ₿'.replace(/\s/g, '').split('');
 
+  if (reduce || lowPower) {
+    // no-op: el canvas queda vacío (decorativo)
+  } else
   document.querySelectorAll<HTMLCanvasElement>('[data-matrix]').forEach((canvas) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;

@@ -11,8 +11,6 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 const dict = getDict(lang);
 const waContact = whatsappUrl(dict.contact.whatsappMessage);
-const prevLabel = lang === 'es' ? 'Anterior' : 'Previous';
-const nextLabel = lang === 'es' ? 'Siguiente' : 'Next';
 ---
 
 <section id="projects" class="relative scroll-mt-24 overflow-hidden border-t border-line/40 py-20 sm:py-28">
@@ -32,29 +30,6 @@ const nextLabel = lang === 'es' ? 'Siguiente' : 'Next';
         </h2>
         <p class="mt-5 text-pretty text-slate-300">{t('projects.body')}</p>
       </div>
-
-      {
-        projects.length > 0 && (
-          <div class="flex shrink-0 gap-3" data-slider-controls>
-            <button
-              type="button"
-              class="grid h-11 w-11 place-items-center rounded-full border border-line bg-white/5 text-white transition-colors hover:border-brand-400 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-400"
-              data-slider-prev
-              aria-label={prevLabel}
-            >
-              <Icon name="arrow" class="h-5 w-5 rotate-180" />
-            </button>
-            <button
-              type="button"
-              class="grid h-11 w-11 place-items-center rounded-full border border-line bg-white/5 text-white transition-colors hover:border-brand-400 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-400"
-              data-slider-next
-              aria-label={nextLabel}
-            >
-              <Icon name="arrow" class="h-5 w-5" />
-            </button>
-          </div>
-        )
-      }
     </div>
 
     {
@@ -89,24 +64,39 @@ const nextLabel = lang === 'es' ? 'Siguiente' : 'Next';
                   class="relative flex aspect-[4/5] items-center justify-center overflow-hidden"
                   style={`background:radial-gradient(130% 80% at 50% -8%, ${p.accent}40 0%, transparent 55%), radial-gradient(90% 60% at 50% 118%, ${p.accent}1f, transparent 60%), #0b1326`}
                 >
-                  {/* Resplandor del color de marca tras el dispositivo */}
-                  <div
-                    class="pointer-events-none absolute left-1/2 top-1/2 h-[72%] w-[72%] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-60 blur-3xl transition-opacity duration-500 group-hover:opacity-100"
-                    style={`background:radial-gradient(circle, ${p.accent}, transparent 66%)`}
-                    aria-hidden="true"
-                  />
-
-                  {/* Dispositivo flotante */}
-                  <div class="float-soft relative z-10 flex h-full w-full items-center justify-center">
+                  {p.kind === 'web' ? (
+                    /* Captura de la web/app a sangre completa */
                     <img
                       src={p.image}
-                      alt={`${p.title[lang]} — mockup`}
+                      alt={`${p.title[lang]} — captura`}
                       loading="lazy"
                       decoding="async"
-                      class="h-[110%] w-auto object-contain drop-shadow-[0_28px_45px_rgba(0,0,0,0.55)] transition-transform duration-300 will-change-transform"
+                      class="absolute inset-0 z-10 h-full w-full object-cover object-top transition-transform duration-500 will-change-transform group-hover:scale-[1.04]"
                       data-card-img
+                      data-cover
                     />
-                  </div>
+                  ) : (
+                    <>
+                      {/* Resplandor del color de marca tras el dispositivo */}
+                      <div
+                        class="pointer-events-none absolute left-1/2 top-1/2 h-[72%] w-[72%] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-60 blur-3xl transition-opacity duration-500 group-hover:opacity-100"
+                        style={`background:radial-gradient(circle, ${p.accent}, transparent 66%)`}
+                        aria-hidden="true"
+                      />
+
+                      {/* Dispositivo flotante */}
+                      <div class="float-soft relative z-10 flex h-full w-full items-center justify-center">
+                        <img
+                          src={p.image}
+                          alt={`${p.title[lang]} — mockup`}
+                          loading="lazy"
+                          decoding="async"
+                          class="h-[110%] w-auto object-contain drop-shadow-[0_28px_45px_rgba(0,0,0,0.55)] transition-transform duration-300 will-change-transform"
+                          data-card-img
+                        />
+                      </div>
+                    </>
+                  )}
 
                   {/* Viñeta + desvanecido inferior: integra el mockup en el tema oscuro */}
                   <div
@@ -158,33 +148,14 @@ const nextLabel = lang === 'es' ? 'Siguiente' : 'Next';
 
 <script>
   const track = document.querySelector<HTMLElement>('[data-slider-track]');
-  const prev = document.querySelector<HTMLButtonElement>('[data-slider-prev]');
-  const next = document.querySelector<HTMLButtonElement>('[data-slider-next]');
 
-  if (track && prev && next) {
+  if (track) {
     // Desplazamiento = ancho de una card + gap
     const step = () => {
       const card = track.querySelector<HTMLElement>('article');
       const gap = parseFloat(getComputedStyle(track).columnGap || '24') || 24;
       return card ? card.offsetWidth + gap : track.clientWidth * 0.8;
     };
-
-    const update = () => {
-      const max = track.scrollWidth - track.clientWidth - 1;
-      prev.disabled = track.scrollLeft <= 0;
-      next.disabled = track.scrollLeft >= max;
-    };
-
-    prev.addEventListener('click', () =>
-      track.scrollBy({ left: -step(), behavior: 'smooth' }),
-    );
-    next.addEventListener('click', () =>
-      track.scrollBy({ left: step(), behavior: 'smooth' }),
-    );
-
-    track.addEventListener('scroll', update, { passive: true });
-    window.addEventListener('resize', update, { passive: true });
-    update();
 
     // Arrastre con el mouse (drag-to-scroll) en desktop
     let down = false;
@@ -207,6 +178,51 @@ const nextLabel = lang === 'es' ? 'Siguiente' : 'Next';
     };
     track.addEventListener('pointerup', release);
     track.addEventListener('pointerleave', release);
+
+    // --- Autoplay: avanza solo y vuelve al inicio al llegar al final ---
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!prefersReduced) {
+      const DELAY = 3500;
+      let timer = 0;
+      let paused = false;
+
+      const tick = () => {
+        if (paused || down) return;
+        const max = track.scrollWidth - track.clientWidth - 1;
+        if (track.scrollLeft >= max) {
+          track.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          track.scrollBy({ left: step(), behavior: 'smooth' });
+        }
+      };
+
+      const start = () => {
+        if (!timer) timer = window.setInterval(tick, DELAY);
+      };
+      const stop = () => {
+        if (timer) {
+          clearInterval(timer);
+          timer = 0;
+        }
+      };
+
+      // Pausa al interactuar; reanuda al salir
+      track.addEventListener('pointerenter', () => (paused = true));
+      track.addEventListener('pointerleave', () => (paused = false));
+      track.addEventListener('focusin', () => (paused = true));
+      track.addEventListener('focusout', () => (paused = false));
+
+      // Pausa cuando la sección no está visible (ahorra batería en móvil)
+      const io = new IntersectionObserver(
+        ([entry]) => (entry.isIntersecting ? start() : stop()),
+        { threshold: 0.2 },
+      );
+      io.observe(track);
+
+      document.addEventListener('visibilitychange', () => {
+        document.hidden ? stop() : start();
+      });
+    }
   }
 
   // --- Cards interactivas: tilt 3D + parallax de imagen + spotlight ---
@@ -219,9 +235,12 @@ const nextLabel = lang === 'es' ? 'Siguiente' : 'Next';
     let nx = 0;
     let ny = 0;
 
+    // Las capturas a sangre completa (object-cover) no se desplazan: el parallax
+    // dejaría ver el borde. Solo aplica al mockup de dispositivo.
+    const isCover = img?.hasAttribute('data-cover');
     const apply = () => {
       inner.style.transform = `rotateX(${(-ny * 8).toFixed(2)}deg) rotateY(${(nx * 10).toFixed(2)}deg)`;
-      if (img) {
+      if (img && !isCover) {
         img.style.transform = `translate(${(-nx * 16).toFixed(1)}px, ${(-ny * 12 - 8).toFixed(1)}px) scale(1.07)`;
       }
       raf = 0;

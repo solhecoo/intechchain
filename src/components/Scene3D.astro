@@ -15,11 +15,16 @@
 </div>
 
 <script>
-  import * as THREE from 'three';
-
   const canvas = document.querySelector<HTMLCanvasElement>('[data-scene3d]');
-  if (canvas) {
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // En móvil / dispositivos táctiles NO cargamos Three.js: el Hero conserva su
+  // fondo de cuadrícula + CircuitPaths. Evita descargar la librería y correr WebGL.
+  const lowPower =
+    window.matchMedia('(pointer: coarse)').matches ||
+    window.matchMedia('(max-width: 768px)').matches;
+
+  if (canvas && !reduceMotion && !lowPower) {
+    const THREE = await import('three');
 
     const renderer = new THREE.WebGLRenderer({
       canvas,
@@ -164,11 +169,7 @@
       if (!document.hidden && visible && !reduceMotion) loop();
     });
 
-    if (reduceMotion) {
-      render(); // un solo fotograma estático
-    } else {
-      loop();
-    }
+    loop();
 
     // 🔁 Para usar un .glb real de Blender en lugar de la red procedural:
     //   import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
